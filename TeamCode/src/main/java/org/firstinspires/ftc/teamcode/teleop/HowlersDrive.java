@@ -29,7 +29,10 @@
 
 package org.firstinspires.ftc.teamcode.teleop;
 
+import com.arcrobotics.ftclib.command.CommandScheduler;
 import com.arcrobotics.ftclib.drivebase.MecanumDrive;
+import com.arcrobotics.ftclib.gamepad.GamepadEx;
+import com.arcrobotics.ftclib.hardware.motors.SimpleMotor;
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
@@ -37,8 +40,8 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.util.Range;
 import org.firstinspires.ftc.teamcode.hardwaremaps.HowlersHardware;
-import com.arcrobotics.ftclib.drivebase.MecanumDrive;
-
+import org.firstinspires.ftc.teamcode.subsystems.driveTrain.DriveTrain;
+import org.firstinspires.ftc.teamcode.subsystems.driveTrain.commands.BasicDrive;
 
 
 @TeleOp(name="HowlersDrive", group="Iterative Opmode")
@@ -48,13 +51,11 @@ public class HowlersDrive extends OpMode
     // Declare OpMode members.
     private ElapsedTime runtime = new ElapsedTime();
     HowlersHardware robot = new HowlersHardware();
-    double gear = 1;
 
-    //motors
+    BasicDrive basicDrive;
 
-
-    MecanumDrive driveTrain;
-
+    GamepadEx driverOp = new GamepadEx(gamepad1);
+    GamepadEx toolOp = new GamepadEx(gamepad2);
 
 
     /*
@@ -62,18 +63,12 @@ public class HowlersDrive extends OpMode
      */
     @Override
     public void init() {
-        telemetry.addData("Status", "Initialized");
         robot.init(hardwareMap);
 
+        basicDrive = new BasicDrive(robot.driveTrain, driverOp);
 
         // Tell the driver that initialization is complete.
         telemetry.addData("Status", "Initialized");
-        gear = 1;
-
-        robot.rightBack.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        robot.rightFront.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        robot.leftFront.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        robot.leftBack.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
     }
 
@@ -90,52 +85,15 @@ public class HowlersDrive extends OpMode
     @Override
     public void start() {
         runtime.reset();
+        CommandScheduler.getInstance().schedule();
     }
+
 
     /*
      * Code to run REPEATEDLY after the driver hits PLAY but before they hit STOP
      */
     @Override
     public void loop() {
-        //Strafe(1);
-
-        double speed = 0.25 * gear;
-
-        double y =0;
-        double x =0;
-        y = gamepad1.left_stick_y;
-        x = gamepad1.left_stick_x;
-
-        robot.leftFront.setPower((y - x) * speed);
-        robot.leftBack.setPower((y - x) * speed);
-
-        robot.rightFront.setPower((y + x) * speed);
-        robot.rightBack.setPower((y + x) * speed);
-
-
-        if (gamepad1.right_bumper) {
-            robot.leftFront.setPower(-0.25 * gear);
-            robot.leftBack.setPower(0.25 * gear);
-
-            robot.rightFront.setPower(0.25 * gear);
-            robot.rightBack.setPower(-0.25 * gear);
-
-        }else if (gamepad1.left_bumper){
-            robot.leftFront.setPower(0.25 * gear);
-            robot.leftBack.setPower(-0.25 * gear);
-
-            robot.rightFront.setPower(-0.25 * gear);
-            robot.rightBack.setPower(0.25 * gear);
-        }
-        if (gamepad1.a) {
-            gear = 2;
-        }else if(gamepad1.b) {
-            gear = 1;
-        }else if(gamepad1.y) {
-            gear = 3;
-        }else if(gamepad1.x) {
-            gear = 4;
-        }
 
     }
 
@@ -144,7 +102,7 @@ public class HowlersDrive extends OpMode
      */
     @Override
     public void stop() {
-        driveTrain.stop();
+        robot.driveTrain.stop();
     }
 
 

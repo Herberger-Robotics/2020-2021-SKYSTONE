@@ -17,6 +17,8 @@ public abstract class HowlersAutoFunction extends LinearOpMode {
     }
 
     public void stopAndReset(){
+
+        /*
         robot.leftBack.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         robot.leftFront.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         robot.rightBack.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
@@ -27,10 +29,13 @@ public abstract class HowlersAutoFunction extends LinearOpMode {
         robot.rightFront.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         robot.rightBack.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
+         */
+
 
     }
 
     public void encoderDrive(double speed, double rightRotations, double leftRotations){
+        /*
         robot.init(hardwareMap);
         int backrightTarget;
         int backleftTarget;
@@ -72,8 +77,9 @@ public abstract class HowlersAutoFunction extends LinearOpMode {
             robot.leftBack.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
             robot.rightBack.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
             robot.rightFront.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-
         }
+
+         */
 
     }
 
