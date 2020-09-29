@@ -29,19 +29,20 @@
 
 package org.firstinspires.ftc.teamcode.teleop;
 
+import com.arcrobotics.ftclib.command.Command;
 import com.arcrobotics.ftclib.command.CommandScheduler;
-import com.arcrobotics.ftclib.drivebase.MecanumDrive;
+import com.arcrobotics.ftclib.controller.PIDController;
 import com.arcrobotics.ftclib.gamepad.GamepadEx;
-import com.arcrobotics.ftclib.hardware.motors.SimpleMotor;
-import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.util.ElapsedTime;
-import com.qualcomm.robotcore.util.Range;
+
 import org.firstinspires.ftc.teamcode.hardwaremaps.HowlersHardware;
-import org.firstinspires.ftc.teamcode.subsystems.driveTrain.DriveTrain;
-import org.firstinspires.ftc.teamcode.subsystems.driveTrain.commands.BasicDrive;
+import org.firstinspires.ftc.teamcode.subsystems.DriveTrain.commands.BasicDrive;
+import org.firstinspires.ftc.teamcode.subsystems.Turret.Turret;
+import org.firstinspires.ftc.teamcode.subsystems.Turret.commands.ManualTurretController;
+
+import java.nio.file.AtomicMoveNotSupportedException;
 
 
 @TeleOp(name="HowlersDrive", group="Iterative Opmode")
@@ -52,10 +53,14 @@ public class HowlersDrive extends OpMode
     private ElapsedTime runtime = new ElapsedTime();
     HowlersHardware robot = new HowlersHardware();
 
-    BasicDrive basicDrive;
+    //BasicDrive basicDrive;
+    //ManualTurretController manualTurretController;
 
     GamepadEx driverOp = new GamepadEx(gamepad1);
     GamepadEx toolOp = new GamepadEx(gamepad2);
+
+    private PIDController _turretPID = new PIDController(new double[]{0.25 ,0 ,0});
+    private double _setPoint = 5 / 100;
 
 
     /*
@@ -65,7 +70,8 @@ public class HowlersDrive extends OpMode
     public void init() {
         robot.init(hardwareMap);
 
-        basicDrive = new BasicDrive(robot.driveTrain, driverOp);
+        //basicDrive = new BasicDrive(robot.driveTrain, driverOp);
+        //manualTurretController = new ManualTurretController(robot.turret, toolOp);
 
         // Tell the driver that initialization is complete.
         telemetry.addData("Status", "Initialized");
@@ -85,7 +91,8 @@ public class HowlersDrive extends OpMode
     @Override
     public void start() {
         runtime.reset();
-        CommandScheduler.getInstance().schedule();
+        //CommandScheduler.getInstance().schedule(basicDrive);
+        //CommandScheduler.getInstance().schedule(manualTurretController);
     }
 
 
@@ -94,6 +101,10 @@ public class HowlersDrive extends OpMode
      */
     @Override
     public void loop() {
+        //CommandScheduler.getInstance().run();
+        //robot.flywheel.set(100);
+        robot.flywheel.set(1);
+        //PIDControlTurret(robot.turret);
 
     }
 
@@ -102,7 +113,13 @@ public class HowlersDrive extends OpMode
      */
     @Override
     public void stop() {
-        robot.driveTrain.stop();
+        robot.turret.stop();
+    }
+
+
+    private void PIDControlTurret(Turret turret) {
+        //if(_turretPID.atSetPoint()){ turret.setSpeed(1); return;}
+        turret.setSpeed(_turretPID.calculate(turret.getCurrentTicks(), _setPoint));
     }
 
 
